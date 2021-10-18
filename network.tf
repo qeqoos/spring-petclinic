@@ -62,10 +62,10 @@ resource "aws_subnet" "subnet_3" {
   cidr_block        = "10.0.3.0/24"
 }
 
-resource "aws_security_group" "jenkins-sg" {
+resource "aws_security_group" "jenkins-master" {
   provider    = aws.provider
-  name        = "jenkins-sg"
-  description = "Allow TCP/8080/80 & TCP/22"
+  name        = "jenkins-master"
+  description = "Allow TCP/8080 & TCP/22, from worker subnet"
   vpc_id      = aws_vpc.main_vpc.id
 
   ingress {
@@ -83,13 +83,48 @@ resource "aws_security_group" "jenkins-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
+    description = "Allow from subnet_2"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["10.0.2.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "jenkins-sg-worker" {
+  provider = aws.region-default
+
+  name        = "jenkins-sg-worker"
+  description = "TCP/22, 80, all from master subnet"
+  vpc_id      = aws_vpc.main_vpc.id
+  ingress {
+    description = "Allow 22 from our public IP"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "Allow traffic from subnet_1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["10.0.1.0/24"]
+  }
+  ingress {
     description = "allow anyone on port 80"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   egress {
     from_port   = 0
     to_port     = 0
