@@ -68,7 +68,7 @@
     #     owner: jenkins
 
     - name: Install Docker
-      shell: amazon-linux-extras install docker
+      shell: amazon-linux-extras install docker -y
 
     - name: Add ec2-user, jenkins to docker group
       user:
@@ -95,3 +95,11 @@
       shell: result_first=1; while [[ $result_first != 0 ]]; do if [[ `grep 'Jenkins is fully up and running' /var/log/jenkins/jenkins.log` ]];then result_first=0;else sleep 4;fi;done
       register: result
       until: result.rc == 0
+    
+    - name: Get init pass
+      shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: result
+
+    - name: Print init pass
+      debug:
+        var: result

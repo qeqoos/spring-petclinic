@@ -4,11 +4,11 @@ resource "aws_key_pair" "master-key" {
   public_key = file("~/.ssh/id_rsa.pub")
 }
 
-resource "aws_key_pair" "worker-key" {
-  provider   = aws.provider
-  key_name   = "jenkins"
-  public_key = file("~/.ssh/id_rsa.pub")
-}
+# resource "aws_key_pair" "worker-key" {
+#   provider   = aws.provider
+#   key_name   = "jenkins"
+#   public_key = file("~/.ssh/id_rsa.pub")
+# }
 resource "aws_instance" "jenkins-master" {
   provider                    = aws.provider
   ami                         = var.ami
@@ -41,7 +41,7 @@ resource "aws_instance" "jenkins-worker" {
   provider                    = aws.provider
   ami                         = var.ami
   instance_type               = var.instance-type
-  key_name                    = aws_key_pair.worker-key.key_name
+  key_name                    = aws_key_pair.master-key.key_name
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.jenkins-sg-worker.id]
   subnet_id                   = aws_subnet.subnet_2.id

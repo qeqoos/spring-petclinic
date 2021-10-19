@@ -8,6 +8,12 @@ terraform {
   }
 }
 
+# terraform {
+#   backend "local" {
+#     path = "/home/pavel/terraformstate/tf_state"
+#   }
+# }
+
 provider "aws" {
   profile = var.profile
   region  = var.region-default
