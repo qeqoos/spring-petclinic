@@ -1,0 +1,23 @@
+---
+- hosts: "{{ passed_in_hosts }}"
+  become: yes
+  tasks:
+    - name: Install python pip
+      yum: 
+        name: python-pip 
+        state: latest
+    - name: Install docker
+      yum:
+        name: docker
+        state: present
+    - name: Install docker-py module
+      pip:
+        name: docker-py
+        state: present
+    - name: Start container
+      docker_container:
+        name: "petclinic-{{ env | default('ci') }}"
+        image: "qeqoos/spring-petclinic:{{ tag | default('latest') }}"
+        state: started
+        published_ports:
+          - "{{ needed_port | default(80) }}:80"
