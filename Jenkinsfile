@@ -1,5 +1,7 @@
 pipeline {
-  agent any
+  agent {
+  label '!master'
+  }
   tools {
     maven 'Maven 3.8.3'
     jdk 'jdk8'
