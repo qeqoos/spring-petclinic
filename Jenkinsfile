@@ -10,7 +10,7 @@ pipeline {
   environment {
     dockerImage = ''
   }
-  // stages {
+  stages {
   //   stage('CHECKOUT') {
   //     steps {
   //       git branch: 'main', changelog: false, poll: false, url: 'https://github.com/qeqoos/spring-petclinic.git'
