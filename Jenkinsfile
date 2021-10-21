@@ -25,7 +25,7 @@ pipeline {
       steps {
         sh 'mvn clean install'
         script {
-          def DOCKER_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+          env.DOCKER_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
           dockerImage = docker.build "qeqoos/spring-petclinic:${DOCKER_TAG}"
         }
       }
@@ -45,7 +45,7 @@ pipeline {
               playbook: 'ansible/deploy-ci-qa.yml',
               inventory: 'ansible/inv_aws_ec2.yml',
               disableHostKeyChecking: true,
-              extras:  "-e passed_in_hosts=localhost -e tag=${DOCKER_TAG} -e host_port=81 -e env=ci")
+              extras:  "-e passed_in_hosts=localhost -e tag=${DOCKER_TAG} -e needed_port=81 -e env=ci")
         }
     }
 
