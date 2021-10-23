@@ -23,7 +23,7 @@ pipeline {
     }
     stage('BUILD AND PUSH') {
       when {
-          branch pattern: "PR-.*|develop|master", comparator: "REGEXP"
+          branch pattern: "PR-.*|dev|main", comparator: "REGEXP"
       }
       steps {
         sh 'mvn clean install'
@@ -40,7 +40,7 @@ pipeline {
 
     stage('CI deploy') {
         when {
-            branch pattern: "dev|master", comparator: "REGEXP"
+            branch pattern: "dev|main", comparator: "REGEXP"
         }
         steps {
             ansiblePlaybook(
