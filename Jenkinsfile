@@ -21,25 +21,25 @@ pipeline {
           sh 'mvn compile' 
        }
     }
-    stage('BUILD') {
+    stage('BUILD AND PUSH') {
+      when {
+          branch pattern: "PR-.*|develop|master", comparator: "REGEXP"
+      }
       steps {
         sh 'mvn clean install'
         script {
           env.DOCKER_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
           dockerImage = docker.build "qeqoos/spring-petclinic:${DOCKER_TAG}"
+          docker.withRegistry( '', 'dockerHubCreds' ) {
+              dockerImage.push()
         }
       }
     }
-    stage('PUSH') {
-        steps {
-            script {
-                docker.withRegistry( '', 'dockerHubCreds' ) {
-                    dockerImage.push()
-                }
-            }
-        }
-    }
+
     stage('CI deploy') {
+        when {
+            branch pattern: "dev|master", comparator: "REGEXP"
+        }
         steps {
             ansiblePlaybook(
               playbook: 'ansible/deploy-ci-qa.yml',
