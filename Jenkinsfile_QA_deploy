@@ -1,0 +1,24 @@
+pipeline {
+    agent {
+        label 'qa'
+    }
+
+    parameters {
+        string(name: 'DockerTag', description: 'Docker tag to deploy on QA')
+        string(name: 'needed_port', description: 'Port on which to run container')
+    }
+    
+    stages {
+        stage('QA deploy') {
+            steps {
+                echo "QA deploy ${params.DockerTag}"
+
+                ansiblePlaybook(
+                playbook: 'ansible/deploy-qa.yml',
+                inventory: 'ansible/inv_aws_ec2.yml',
+                disableHostKeyChecking: true,
+                extras:  "-e passed_in_hosts=localhost -e tag=${params.DockerTag} -e needed_port=${params.needed_port} -e env=qa")
+           }
+        }
+    }
+} 
