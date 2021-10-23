@@ -32,9 +32,11 @@ pipeline {
           dockerImage = docker.build "qeqoos/spring-petclinic:${DOCKER_TAG}"
           docker.withRegistry( '', 'dockerHubCreds' ) {
               dockerImage.push()
-        }
-      }
+          }
+        }  
+      }  
     }
+
 
     stage('CI deploy') {
         when {
