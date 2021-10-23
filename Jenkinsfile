@@ -23,7 +23,7 @@ pipeline {
     }
     stage('BUILD AND PUSH') {
       when {
-          branch pattern: "PR-.*|dev|main", comparator: "REGEXP"
+          branch pattern: "PR-*|dev|main", comparator: "REGEXP"
       }
       steps {
         sh 'mvn clean install'
@@ -47,7 +47,7 @@ pipeline {
               playbook: 'ansible/deploy-ci-qa.yml',
               inventory: 'ansible/inv_aws_ec2.yml',
               disableHostKeyChecking: true,
-              extras:  "-e passed_in_hosts=localhost -e tag=${DOCKER_TAG} -e needed_port=81 -e env=ci")
+              extras:  "-e passed_in_hosts=localhost -e tag=${DOCKER_TAG} -e needed_port=80 -e env=ci")
         }
     }
 
