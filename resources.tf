@@ -37,33 +37,33 @@ resource "aws_instance" "jenkins-master" {
   depends_on = [aws_main_route_table_association.set-master-default-rt-assoc]
 }
 
-# resource "aws_instance" "jenkins-worker" {
-#   provider                    = aws.provider
-#   ami                         = var.ami
-#   instance_type               = var.instance-type
-#   key_name                    = aws_key_pair.master-key.key_name
-#   associate_public_ip_address = true
-#   vpc_security_group_ids      = [aws_security_group.jenkins-sg-worker.id]
-#   subnet_id                   = aws_subnet.subnet_2.id
+resource "aws_instance" "jenkins-worker" {
+  provider                    = aws.provider
+  ami                         = var.ami
+  instance_type               = "t2.small"
+  key_name                    = aws_key_pair.master-key.key_name
+  associate_public_ip_address = true
+  vpc_security_group_ids      = [aws_security_group.jenkins-sg-worker.id]
+  subnet_id                   = aws_subnet.subnet_2.id
 
-#   tags = {
-#     Name = "jenkins_worker_tf"
-#   }
+  tags = {
+    Name = "jenkins_worker_tf"
+  }
 
-#   user_data = <<EOF
-#   #!/bin/bash
-#   sudo amazon-linux-extras install epel -y
-#   EOF
+  user_data = <<EOF
+  #!/bin/bash
+  sudo amazon-linux-extras install epel -y
+  EOF
 
-#   provisioner "local-exec" {
-#     command = <<EOF
-#     aws --profile ${var.profile} ec2 wait instance-status-ok --region ${var.region-default} --instance-ids ${self.id} \
-#     && ansible-playbook --extra-vars 'passed_in_hosts=tag_Name_${self.tags.Name}' ansible/worker-setup.yml
-#     EOF
-#   }
+  provisioner "local-exec" {
+    command = <<EOF
+    aws --profile ${var.profile} ec2 wait instance-status-ok --region ${var.region-default} --instance-ids ${self.id} \
+    && ansible-playbook --extra-vars 'passed_in_hosts=tag_Name_${self.tags.Name}' ansible/worker-setup.yml
+    EOF
+  }
 
-#   depends_on = [aws_main_route_table_association.set-master-default-rt-assoc, aws_instance.jenkins-master]
-# }
+  depends_on = [aws_main_route_table_association.set-master-default-rt-assoc, aws_instance.jenkins-master]
+}
 
 resource "aws_instance" "qa_instance" {
   provider                    = aws.provider
@@ -72,11 +72,23 @@ resource "aws_instance" "qa_instance" {
   key_name                    = aws_key_pair.master-key.key_name
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.jenkins-sg-worker.id]
-  subnet_id                   = aws_subnet.subnet_2.id
+  subnet_id                   = aws_subnet.subnet_3.id
 
   tags = {
     Name = "qa_instance"
   }
 
-  depends_on = [aws_main_route_table_association.set-master-default-rt-assoc]
+  user_data = <<EOF
+  #!/bin/bash
+  sudo amazon-linux-extras install epel -y
+  EOF
+
+  provisioner "local-exec" {
+    command = <<EOF
+    aws --profile ${var.profile} ec2 wait instance-status-ok --region ${var.region-default} --instance-ids ${self.id} \
+    && ansible-playbook --extra-vars 'passed_in_hosts=tag_Name_${self.tags.Name}' ansible/worker-setup.yml
+    EOF
+  }
+
+  depends_on = [aws_main_route_table_association.set-master-default-rt-assoc, aws_instance.jenkins-master]
 }
