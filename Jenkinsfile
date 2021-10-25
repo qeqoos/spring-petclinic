@@ -22,9 +22,6 @@ pipeline {
        }
     }
     stage('BUILD AND PUSH') {
-      when {
-          branch pattern: "PR-*|dev|main", comparator: "REGEXP"
-      }
       steps {
         sh 'mvn clean install'
         script {
