@@ -14,7 +14,7 @@ pipeline {
                 echo "QA deploy ${params.DockerTag}"
 
                 ansiblePlaybook(
-                playbook: 'ansible/deploy-qa.yml',
+                playbook: 'ansible/deploy-ci-qa.yml',
                 inventory: 'ansible/inv_aws_ec2.yml',
                 disableHostKeyChecking: true,
                 extras:  "-e passed_in_hosts=localhost -e tag=${params.DockerTag} -e needed_port=${params.needed_port} -e env=qa")

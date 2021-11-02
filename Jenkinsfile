@@ -1,6 +1,6 @@
 pipeline {
   agent {
-  label '!master'
+  label '!master && !qa'
   }
   tools {
     maven 'Maven 3.8.3'
