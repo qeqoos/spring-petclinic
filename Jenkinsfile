@@ -1,6 +1,6 @@
 pipeline {
   agent {
-  label '!master'
+  label '!master && !qa'
   }
   tools {
     maven 'Maven 3.8.3'
@@ -22,9 +22,6 @@ pipeline {
        }
     }
     stage('BUILD AND PUSH') {
-      when {
-          branch pattern: "PR-*|dev|main", comparator: "REGEXP"
-      }
       steps {
         sh 'mvn clean install'
         script {
