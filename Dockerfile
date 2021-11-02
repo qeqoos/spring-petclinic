@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY src ./src
 
-COPY /app/target/spring-petclinic-*.jar /app/spring-petclinic.jar
+COPY target/spring-petclinic-2.5.0-SNAPSHOT.jar /app/spring-petclinic.jar
 
 EXPOSE 80
 
